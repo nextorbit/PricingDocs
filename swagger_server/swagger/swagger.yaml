@@ -1,0 +1,457 @@
+---
+swagger: "2.0"
+info:
+  description: ""
+  version: "0.0.1"
+  title: "Price Monitoring and Optimization API Documentation"
+  termsOfService: "https://nextorbit.github.io/Gex_NextOrbit/index.html"
+  contact:
+    email: "connect@nextorbit.com"
+tags:
+- name: "PRODUCT MASTER"
+  description: "List all the products in your catalog"
+- name: "URL API"
+  description: "A URL specifying your or any competitor product page"
+- name: "PRODUCT CATEGORY"
+  description: "Define your own similar product groups"
+- name: "USER"
+  description: "User account APIs"
+schemes:
+- "https"
+paths:
+  /product-master/start-from:
+    get:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "List of products in the user account"
+      description: "Returns detailed information about the products added so far into\
+        \ the platform"
+      operationId: "get_list"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "startfrom"
+        in: "query"
+        description: "Offset for pagination. It can take 0 and exact multiples of\
+          \ 100 as a value."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "An object contains an array of products and next page link."
+        404:
+          description: "Product list not found"
+        405:
+          description: "Invalid input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/summary/startfrom:
+    get:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "List of products along with their pricing infromation in the user\
+        \ account"
+      description: "Returns detailed information about the products and their respective\
+        \ prices added so far into the platform"
+      operationId: "summary"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "summary"
+        in: "query"
+        description: "A keyword to obtain all price information related to the product."
+        required: true
+        type: "string"
+      - name: "startfrom"
+        in: "query"
+        description: "Offset for pagination. It can take 0 and exact multiples of\
+          \ 100 as a value"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "An object contains an array of products with price summary\
+            \ information and next page link."
+        400:
+          description: "Requested product list not found."
+        405:
+          description: "Invalid input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/productid:
+    get:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "Product information"
+      description: "Returns product info with the product id mentioned"
+      operationId: "get_product_info"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "productID"
+        in: "query"
+        description: "The unique product ID whose information is to be fetched."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "A product object contains attached URL ids."
+        404:
+          description: "Requested product not found."
+        405:
+          description: "Invalid input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/add/id:
+    post:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "Add a new product"
+      description: "Adds a new product to the platform"
+      operationId: "add_product"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "query"
+        description: "Product name to be added"
+        required: true
+        type: "string"
+      - name: "brand"
+        in: "query"
+        description: "Brand name of the specific product"
+        required: true
+        type: "string"
+      - name: "category"
+        in: "query"
+        description: "Group/Category of the product"
+        required: true
+        type: "string"
+      - name: "product_code"
+        in: "query"
+        description: "Product Code assigned to the product"
+        required: false
+        type: "string"
+      - name: "cost"
+        in: "query"
+        description: "Price of the product being added"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "A successful response object contains unique id of the new\
+            \ product and result status."
+        400:
+          description: "Missing or incorrect parameter."
+        405:
+          description: "Invalid input"
+        422:
+          description: "This product already exists."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/add/batch:
+    post:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "Adding products to the platform in bulk."
+      description: "Adds multiple products to the platform at one time"
+      operationId: "add_productbatch"
+      consumes:
+      - "multipart/form-data"
+      parameters:
+      - name: "name"
+        in: "formData"
+        description: "Product name to be added"
+        required: false
+        type: "string"
+      - name: "brand"
+        in: "formData"
+        description: "Brand name of the specific product"
+        required: false
+        type: "string"
+      - name: "category"
+        in: "formData"
+        description: "Group/Category of the product"
+        required: false
+        type: "string"
+      - name: "product_code"
+        in: "formData"
+        description: "Product Code assigned to the product"
+        required: false
+        type: "string"
+      - name: "cost"
+        in: "formData"
+        description: "Price of the product being added"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "A successful response object contains progress result."
+        405:
+          description: "Invalid input"
+        422:
+          description: "This list already in the process queue./ Package limit exceeded."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/edit/id:
+    post:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "Edit Product Information"
+      description: "Edits and Updates the information of the product present on the\
+        \ platform."
+      operationId: "edit_product"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "productID"
+        in: "query"
+        description: "The unique product ID whose information is to be edited."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "A product object contains attached URL ids."
+        404:
+          description: "Requested product not found."
+        405:
+          description: "Invalid input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/delete/product/id:
+    get:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "Delete given product and all of attached URLs"
+      description: "Deletes a product with given id from the platform."
+      operationId: "delete_product"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "productID"
+        in: "query"
+        description: "The unique product ID whose information is to be deleted."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "A successful response object contains result status.."
+        404:
+          description: "Requested product not found."
+        405:
+          description: "Invalid input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /product-master/progress/batchImport:
+    get:
+      tags:
+      - "PRODUCT MASTER"
+      summary: "Get status of a batch import"
+      description: "Returns progress status of batch import product."
+      operationId: "status_product"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "A successful response object contains result status."
+        500:
+          description: "A general error occurred."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_master_controller"
+  /url-api/get/url/id:
+    get:
+      tags:
+      - "COMPETITOR URL"
+      summary: "Get URL info"
+      description: "Returns URL info with given id."
+      operationId: "get_infourl"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "urlID"
+        in: "query"
+        description: "The unique ID of the URL whose information is needed."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "A URL object contains unique id and url."
+        404:
+          description: "Requested URL not found."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.competitor_url_controller"
+  /url-api/add/url:
+    post:
+      tags:
+      - "COMPETITOR URL"
+      summary: "Add a new URL to given product"
+      description: "Adds your own URL or a competitor's URL to one of your products."
+      operationId: "addurl"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "productID"
+        in: "query"
+        description: "Product id which you want to add a URL"
+        required: true
+        type: "integer"
+      - name: "url"
+        in: "query"
+        description: "The URL which is to be added."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "A successful response object contains unique id of the new\
+            \ URL and result status."
+        404:
+          description: "Requested URL not found."
+        405:
+          description: "Invalid input"
+        422:
+          description: "This object already exists."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.competitor_url_controller"
+  /url-api/delete/url/id:
+    get:
+      tags:
+      - "COMPETITOR URL"
+      summary: "Delete URL"
+      description: "Deletes url with given id."
+      operationId: "deleteurl"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "urlID"
+        in: "query"
+        description: "The unique ID of the URL whose information is to be deleted."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "A successful response object contains result status."
+        404:
+          description: "Requested URL not found."
+        405:
+          description: "Invalid input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.competitor_url_controller"
+  /product-category/startFrom:
+    post:
+      tags:
+      - "PRODUCT CATEGORY"
+      summary: "List all categories in the store"
+      description: "Returns list of your categories."
+      operationId: "getall_category"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "startfrom"
+        in: "query"
+        description: "Offset for pagination."
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "An object contains an array of categories and next page link."
+        404:
+          description: "Requested category list not found."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_category_controller"
+  /product-category/get/category/id:
+    post:
+      tags:
+      - "PRODUCT CATEGORY"
+      summary: "Get a specific category on the platform"
+      description: "Returns list of your categories."
+      operationId: "get_category"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ID"
+        in: "query"
+        description: "Unique ID of the category"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "An object contains an array of categories and next page link."
+        404:
+          description: "Requested category list not found."
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_category_controller"
+  /product-category/edit/category/id:
+    post:
+      tags:
+      - "PRODUCT CATEGORY"
+      summary: "Change the name of a particular category"
+      description: "Edit and updates category name with given id."
+      operationId: "edit_category"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ID"
+        in: "query"
+        description: "Unique ID of the category"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "A successful response object contains unique id of the category\
+            \ and result status."
+        404:
+          description: "Requested category list not found."
+        405:
+          description: "Invalid Input"
+      security:
+      - Token: []
+      x-swagger-router-controller: "swagger_server.controllers.product_category_controller"
+securityDefinitions:
+  Token:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+definitions: {}
+externalDocs:
+  description: "Find out more"
+  url: "https://api.nextorbit.com"
